@@ -1,10 +1,14 @@
 const createError = require("http-errors");
 import express, { Request, Response, urlencoded } from "express";
 import { Provider } from "oidc-provider";
+import { generators, Issuer } from 'openid-client';
 
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const Vue = require('vue')
+const server = require('express')()
+const renderer = require('vue-server-renderer').createRenderer()
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -22,16 +26,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+const nonce = generators.nonce();
 
 const oidc = new Provider("http://localhost:3000", {
   clients: [
     {
       client_id: "foo",
       client_secret: "bar",
-      redirect_uris: ["https://azure.fieldassist.io/"],
+      redirect_uris: ["https://azure.fieldassist.io/","http://localhost:3000/select"],
       grant_types: ["implicit"],
       response_types: ["id_token"],
       token_endpoint_auth_method: "none",
+
     },
   ],
   responseTypes: ["id_token"],
@@ -41,6 +47,7 @@ const oidc = new Provider("http://localhost:3000", {
       enabled: false,
     },
   },
+
   async loadExistingGrant(ctx) {
     const grantId =
       (ctx?.oidc?.result &&
@@ -65,6 +72,7 @@ const oidc = new Provider("http://localhost:3000", {
     }
   },
 });
+
 
 app.use("/oidc", oidc.callback());
 
@@ -131,6 +139,93 @@ app.post(
     }
   }
 );
+
+app.get('/', async (req, res, next) => {
+
+  const issuer = await Issuer.discover('http://localhost:3000/oidc')
+  const client = new issuer.Client({
+    client_id: 'foo',
+    response_types: ['id_token'],
+    redirect_uris: ['http://localhost:3000/select']
+  })
+
+  const url = client.authorizationUrl({
+    scope: 'openid email profile',
+    nonce,
+  });
+
+  res.redirect(url);
+});
+
+
+app.get('/success', (req, res, next) => {
+  const app = new Vue({
+    data: {
+      url: req.url
+    },
+    template: `<div>Success {{ url }}</div>`
+  })
+
+  renderer.renderToString(app, (err: Error, html: any) => {
+    if (err) {
+      res.status(500).end('Internal Server Error')
+      return
+    }
+    res.end(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head><title>Hello</title></head>
+        <body>${html}</body>
+      </html>
+    `)
+  })
+})
+
+app.get('/select', (req, res, next) => {
+  const app = new Vue({
+    data: {
+      url: req.url
+    },
+    template: `<div>Select a company {{ url }}</div>`
+  })
+
+  renderer.renderToString(app, (err: Error, html: any) => {
+    if (err) {
+      res.status(500).end('Internal Server Error')
+      return
+    }
+    res.end(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head><title>Hello</title></head>
+        <body>${html}</body>
+      </html>
+    `)
+  })
+})
+
+// app.get('/', (req, res, next) => {
+//   const app = new Vue({
+//     data: {
+//       url: req.url
+//     },
+//     template: `<div>The visited URL is: {{ url }}</div>`
+//   })
+
+//   renderer.renderToString(app, (err: Error, html: any) => {
+//     if (err) {
+//       res.status(500).end('Internal Server Error')
+//       return
+//     }
+//     res.end(`
+//       <!DOCTYPE html>
+//       <html lang="en">
+//         <head><title>Hello</title></head>
+//         <body>${html}</body>
+//       </html>
+//     `)
+//   })
+// })
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
