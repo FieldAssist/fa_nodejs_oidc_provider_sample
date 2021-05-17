@@ -33,7 +33,7 @@ jobs:
     - name: Run Azure webapp deploy action using publish profile credentials
       uses: azure/webapps-deploy@v2
       with:
-        app-name: fa-azure-api
-        slot-name: Production
+        app-name: 'falogin'
+        slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_a1f5b85936c74a2998f7d3c19dcdd508 }}
 
