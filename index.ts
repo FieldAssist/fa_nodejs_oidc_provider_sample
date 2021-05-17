@@ -3,41 +3,68 @@ import express, { Request, Response, urlencoded } from "express";
 import { Provider } from "oidc-provider";
 import { generators, Issuer } from 'openid-client';
 
+var cors = require('cors')
+
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const Vue = require('vue')
 const server = require('express')()
 const renderer = require('vue-server-renderer').createRenderer()
+var history = require('connect-history-api-fallback');
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const body = urlencoded({ extended: false });
 
 const app = express();
-
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
+//app.use(express.static(path.join(__dirname, '/client/dist')));
+
 // app.set('view engine', 'pug');
-app.set("view engine", "ejs");
+// app.set("view engine", "ejs");
+const staticFileMiddleware = express.static(path.join(__dirname + '/client/dist'));
+
+app.use(staticFileMiddleware);
+app.use(history({
+  disableDotRule: true,
+  verbose: true,
+  rewrites: [
+    {
+      from: /^\/oidc\/.*$/,
+      to: function (context: any) {
+        return context.parsedUrl.path;
+      }
+    },
+    {
+      from: /^\/api\/.*$/,
+      to: function (context: any) {
+        return context.parsedUrl.path;
+      }
+    }
+  ]
+}));
+app.use(staticFileMiddleware);
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static("public"));
+app.use(cors())
 const nonce = generators.nonce();
 
 const oidc = new Provider("http://localhost:3000", {
   clients: [
     {
+
       client_id: "foo",
       client_secret: "bar",
-      redirect_uris: ["https://azure.fieldassist.io/","http://localhost:3000/select"],
+      redirect_uris: ["https://azure.fieldassist.io/", "http://localhost:3000/about"],
       grant_types: ["implicit"],
       response_types: ["id_token"],
       token_endpoint_auth_method: "none",
-
     },
   ],
   responseTypes: ["id_token"],
@@ -73,14 +100,7 @@ const oidc = new Provider("http://localhost:3000", {
   },
 });
 
-
 app.use("/oidc", oidc.callback());
-
-function setNoCache(req: Request, res: Response, next: any) {
-  res.set("Pragma", "no-cache");
-  res.set("Cache-Control", "no-cache, no-store");
-  next();
-}
 
 app.get("/interaction/:uid", async (req, res, next) => {
   try {
@@ -89,26 +109,34 @@ app.get("/interaction/:uid", async (req, res, next) => {
       res
     );
 
-    const id: unknown = params.client_id;
-    const client11 = await oidc.Client.find(typeof id === "string" ? id : "12");
-    switch (prompt.name) {
-      case "login": {
-        return res.render("login", {
-          client11,
-          uid,
-          details: prompt.details,
-          params,
-          title: "Sign-in",
-          //session: session ? debug(session) : undefined,
-          // dbg: {
-          //   params: debug(params),
-          //   prompt: debug(prompt),
-          // },
-        });
-      }
-      default:
-        return undefined;
-    }
+    console.log(uid)
+
+    res.render(path.join(__dirname + '/client/dist/index.html'));
+
+    // const id: unknown = params.client_id;
+    // const client11 = await oidc.Client.find(typeof id === "string" ? id : "12");
+    // switch (prompt.name) {
+    //   case "login": {
+
+    //     res.render("index", { users: [] });
+
+    //     return res.render("login", {
+    //       client11,
+    //       uid,
+    //       details: prompt.details,
+    //       params,
+    //       title: "Sign-in",
+    //       //session: session ? debug(session) : undefined,
+    //       // dbg: {
+    //       //   params: debug(params),
+    //       //   prompt: debug(prompt),
+
+    //       // },
+    //     });
+    //   }
+    //   default:
+    //     return undefined;
+    // }
   } catch (err) {
     return next(err);
   }
@@ -116,23 +144,26 @@ app.get("/interaction/:uid", async (req, res, next) => {
 
 app.post(
   "/interaction/:uid/login",
-  setNoCache,
   body,
   async (req, res, next) => {
     try {
+
       const {
         prompt: { name },
       } = await oidc.interactionDetails(req, res);
 
+
+      console.log(name)
       const result = {
         login: {
-          accountId: "12345",
+          accountId: req.body.email,
         },
       };
 
-      await oidc.interactionFinished(req, res, result, {
+      const result22 = await oidc.interactionFinished(req, res, result, {
         mergeWithLastSubmission: false,
       });
+      console.log(result22);
     } catch (err) {
       console.error(err);
       next(err);
@@ -140,30 +171,34 @@ app.post(
   }
 );
 
-app.get('/', async (req, res, next) => {
+app.get('/api/url', async (req, res, next) => {
 
-  const issuer = await Issuer.discover('http://localhost:3000/oidc')
+  const issuer = await Issuer.discover(req.baseUrl+'http://localhost:3000/oidc')
   const client = new issuer.Client({
     client_id: 'foo',
     response_types: ['id_token'],
-    redirect_uris: ['http://localhost:3000/select']
+    redirect_uris: ['http://localhost:3000/about']
+
   })
+
 
   const url = client.authorizationUrl({
     scope: 'openid email profile',
     nonce,
   });
 
-  res.redirect(url);
-});
 
+  console.log(url)
+  res.send(url);
+});
 
 app.get('/success', (req, res, next) => {
   const app = new Vue({
     data: {
       url: req.url
     },
-    template: `<div>Success {{ url }}</div>`
+    template: `
+      <div>Successcc {{ url }}</div>`
   })
 
   renderer.renderToString(app, (err: Error, html: any) => {
@@ -175,18 +210,23 @@ app.get('/success', (req, res, next) => {
       <!DOCTYPE html>
       <html lang="en">
         <head><title>Hello</title></head>
-        <body>${html}</body>
+        <body>${ html }</body>
       </html>
     `)
   })
 })
 
-app.get('/select', (req, res, next) => {
+// app.get('/select', (req, res, next) => {
+//   res.redirect('/about')
+// })
+
+app.get('/', (req, res, next) => {
   const app = new Vue({
     data: {
       url: req.url
     },
-    template: `<div>Select a company {{ url }}</div>`
+    template: `
+      <div>The visited URL is: {{ url }}</div>`
   })
 
   renderer.renderToString(app, (err: Error, html: any) => {
@@ -198,34 +238,11 @@ app.get('/select', (req, res, next) => {
       <!DOCTYPE html>
       <html lang="en">
         <head><title>Hello</title></head>
-        <body>${html}</body>
+        <body>${ html }</body>
       </html>
     `)
   })
 })
-
-// app.get('/', (req, res, next) => {
-//   const app = new Vue({
-//     data: {
-//       url: req.url
-//     },
-//     template: `<div>The visited URL is: {{ url }}</div>`
-//   })
-
-//   renderer.renderToString(app, (err: Error, html: any) => {
-//     if (err) {
-//       res.status(500).end('Internal Server Error')
-//       return
-//     }
-//     res.end(`
-//       <!DOCTYPE html>
-//       <html lang="en">
-//         <head><title>Hello</title></head>
-//         <body>${html}</body>
-//       </html>
-//     `)
-//   })
-// })
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -235,16 +252,18 @@ app.use((req, res, next) => {
 // error handler
 app.use((err: any, req: Request, res: Response, next: any) => {
   // set locals, only providing error in development
-  res.locals.message = err.message;
+  res.locals.message = err.message ?? "Unknown Error";
   res.locals.error = req.app.get("env") === "development" ? err : {};
-
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  // res.render("error");
+  res.redirect(`/error#error=${ res.locals.message }&message=${ res.locals.error }`)
+  // res.sendFile(path.join(__dirname + '/client/dist/index.html'));
+
 });
 
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-  console.log(`The application is listening on port ${port}!`);
+  console.log(`The application is listening on port ${ port }!`);
 });
