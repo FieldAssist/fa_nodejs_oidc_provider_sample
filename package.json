@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node ./index.ts",
     "dev:debug": "nodemon --inspect index.ts",
     "serve": "node dist/index.js",
     "prepare": "husky install",
