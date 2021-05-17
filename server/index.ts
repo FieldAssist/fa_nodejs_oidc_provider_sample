@@ -13,7 +13,7 @@ const server = require('express')()
 const renderer = require('vue-server-renderer').createRenderer()
 var history = require('connect-history-api-fallback');
 
-const indexRouter = require("./routes/index");
+const indexRouter = require("./routes");
 const usersRouter = require("./routes/users");
 const body = urlencoded({ extended: false });
 
@@ -24,7 +24,7 @@ app.set("views", path.join(__dirname, "views"));
 
 // app.set('view engine', 'pug');
 // app.set("view engine", "ejs");
-const staticFileMiddleware = express.static(path.join(__dirname + '/client/dist'));
+const staticFileMiddleware = express.static(path.join(__dirname + '/../client/dist'));
 
 app.use(staticFileMiddleware);
 app.use(history({
@@ -111,7 +111,7 @@ app.get("/interaction/:uid", async (req, res, next) => {
 
     console.log(uid)
 
-    res.render(path.join(__dirname + '/client/dist/index.html'));
+    res.render(path.join(__dirname + '/../client/dist/index.html'));
 
     // const id: unknown = params.client_id;
     // const client11 = await oidc.Client.find(typeof id === "string" ? id : "12");
@@ -173,7 +173,7 @@ app.post(
 
 app.get('/api/url', async (req, res, next) => {
 
-  const issuer = await Issuer.discover(req.baseUrl+'http://localhost:3000/oidc')
+  const issuer = await Issuer.discover(req.baseUrl + 'http://localhost:3000/oidc')
   const client = new issuer.Client({
     client_id: 'foo',
     response_types: ['id_token'],
