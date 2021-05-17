@@ -24,7 +24,7 @@ app.set("views", path.join(__dirname, "views"));
 
 // app.set('view engine', 'pug');
 // app.set("view engine", "ejs");
-const staticFileMiddleware = express.static(path.join(__dirname + '/../client/dist'));
+const staticFileMiddleware = express.static(path.join(__dirname + '/client/dist'));
 
 app.use(staticFileMiddleware);
 app.use(history({
@@ -55,13 +55,13 @@ app.use(express.static("public"));
 app.use(cors())
 const nonce = generators.nonce();
 
-const oidc = new Provider("http://localhost:3000", {
+const oidc = new Provider("https://falogin.azurewebsites.net", {
   clients: [
     {
 
       client_id: "foo",
       client_secret: "bar",
-      redirect_uris: ["https://azure.fieldassist.io/", "http://localhost:3000/about"],
+      redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about"],
       grant_types: ["implicit"],
       response_types: ["id_token"],
       token_endpoint_auth_method: "none",
@@ -111,7 +111,7 @@ app.get("/interaction/:uid", async (req, res, next) => {
 
     console.log(uid)
 
-    res.render(path.join(__dirname + '/../client/dist/index.html'));
+    res.render(path.join(__dirname + '/client/dist/index.html'));
 
     // const id: unknown = params.client_id;
     // const client11 = await oidc.Client.find(typeof id === "string" ? id : "12");
@@ -173,11 +173,11 @@ app.post(
 
 app.get('/api/url', async (req, res, next) => {
 
-  const issuer = await Issuer.discover(req.baseUrl + 'http://localhost:3000/oidc')
+  const issuer = await Issuer.discover(req.baseUrl + 'https://falogin.azurewebsites.net/oidc')
   const client = new issuer.Client({
     client_id: 'foo',
     response_types: ['id_token'],
-    redirect_uris: ['http://localhost:3000/about']
+    redirect_uris: ['https://falogin.azurewebsites.net/about']
 
   })
 

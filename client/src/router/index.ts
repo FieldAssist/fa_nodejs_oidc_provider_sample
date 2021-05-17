@@ -29,6 +29,11 @@ const routes: Array<RouteConfig> = [
     path: '/error',
     name: 'Error',
     component: Error
+  },
+  {
+    path: '*',
+    name: 'Error',
+    component: Error
   }
 ]
 

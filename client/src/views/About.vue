@@ -1,6 +1,6 @@
 <template>
-  <div class="about vertical-center">
-    <div class="d-flex justify-content-center">
+  <div class="about">
+    <div class="d-flex justify-content-center vertical-center mx-2">
       <b-card style="box-shadow: 0 5px 20px 0 rgb(21 27 38 / 8%)" border-variant="light"
       >
         <b-card-title>
