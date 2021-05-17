@@ -18,9 +18,9 @@
       >
     </b-navbar>
     <router-view />
-    <footer class="footer fixed-bottom py-3">
+    <footer class="footer fixed-bottom py-3 d-none d-sm-flex mx-auto">
       <!-- Copyright -->
-      <div class="footer-copyright text-center">
+      <div class="footer-copyright text-center mx-auto">
         © 2021 Copyright:
         <a href="https://mdbootstrap.com/">FieldAssist</a>
       </div>
