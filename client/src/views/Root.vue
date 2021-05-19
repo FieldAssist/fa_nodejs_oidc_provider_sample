@@ -20,24 +20,24 @@
 // import { generators, Issuer } from 'openid-client'
 
 // const nonce = generators.nonce()
-// import axios from 'axios'
+import axios from 'axios'
 
 export default {
   name: 'Root.vue',
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   mounted () {
     console.log('gsdgss')
-    // axios
-    //   .get('/api/url')
-    //   .then((res) => {
-    //     console.log(res.data)
-    //     window.location.href = res.data
-    //   })
-    //   .catch((err) => {
-    //     console.error(err)
-    //   })
-    const url = `/oidc/auth?client_id=foo&scope=openid email profile&response_type=id_token&redirect_uri=${window.location.origin}/about&nonce=DQLVEKPS-ab25Q7AxTXnw36T_-J4Pln_tUgxPAhC2Ys`
-    window.location.href = url
+    axios
+      .get('/api/url')
+      .then((res) => {
+        console.log(res.data)
+        window.location.href = res.data
+      })
+      .catch((err) => {
+        console.error(err)
+        this.$router.replace('/error#error=' + err)
+      })
+    // const url = `/oidc/auth?client_id=foo&scope=openid email profile&response_type=id_token&redirect_uri=${window.location.origin}/about&nonce=DQLVEKPS-ab25Q7AxTXnw36T_-J4Pln_tUgxPAhC2Ys`
+    // window.location.href = url
     // http://localhost:3000/oidc/auth?
     // client_id=foo&
     // scope=openid%20email%20profile&
