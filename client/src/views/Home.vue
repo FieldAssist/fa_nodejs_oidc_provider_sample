@@ -58,7 +58,7 @@
                 </b-button
                 >
                 <div class="mt-4 mb-4">
-                  <a href="#"><u>Forgot Password</u></a>
+                  <a href="/forgot-password"><u>Forgot Password</u></a>
                 </div>
 
                 <p class="p-0 m-0">Not able to login?</p>

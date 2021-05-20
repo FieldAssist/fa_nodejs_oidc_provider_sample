@@ -3,6 +3,8 @@ import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../views/Home.vue'
 import Root from '../views/Root.vue'
 import Error from '../views/Error.vue'
+import ForgotPassword from '../views/ForgotPassword.vue'
+import PasswordSuccessChange from '../views/PasswordChangeSuccess.vue'
 
 Vue.use(VueRouter)
 
@@ -24,6 +26,16 @@ const routes: Array<RouteConfig> = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword
+  },
+  {
+    path: '/password-change-success',
+    name: 'ForgotPassword',
+    component: PasswordSuccessChange
   },
   {
     path: '/error',

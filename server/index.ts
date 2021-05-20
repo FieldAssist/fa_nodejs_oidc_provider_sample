@@ -174,6 +174,14 @@ app.post (
   }
 );
 
+app.post (
+  "/api/forgot-password",
+  body,
+  async (req, res, next) => {
+    res.redirect('/password-change-success#email='+req.body.email)
+  }
+);
+
 app.get ('/api/url', async (req, res, next) => {
   const host = process.env.NODE_ENV == 'production' ? 'https://falogin.azurewebsites.net' : 'http://localhost:3000'
   const issuer = await Issuer.discover (host + '/oidc')
