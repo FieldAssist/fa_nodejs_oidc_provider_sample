@@ -10,15 +10,26 @@
       >
         <b-row no-gutters align-v="center">
           <b-col class="d-none d-lg-block">
-            <b-card-img
-              src="https://pbs.twimg.com/media/Ej2_bd_VkAA9wq6.jpg"
-              alt="Image"
+            <b-carousel
+              id="carousel-1"
+              :interval="4000"
+              controls
+              img-width="500"
+              indicators
+              style="width: 500px; max-height:400px; min-height:400px;overflow: hidden"
+            >
+              <b-carousel-slide img-src="@/assets/t1.jpeg"></b-carousel-slide>
 
-              class="rounded-0"
-              style="width: 500px;"
-            ></b-card-img>
+              <b-carousel-slide img-src="@/assets/t2.jpeg"></b-carousel-slide>
+            </b-carousel>
+            <!--            <img-->
+            <!--              src="@/assets/t1.jpeg"-->
+            <!--              alt="Image"-->
+            <!--              class="rounded-0"-->
+            <!--              style="width: 500px;"-->
+            <!--            />-->
           </b-col>
-          <b-col  class="px-4">
+          <b-col class="px-4">
             <b-card-title> Login to your Account</b-card-title>
             <b-card-text> Please enter your credentials</b-card-text>
             <!--        <b-card-text>-->
@@ -60,10 +71,9 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 // import HelloWorld from '@/components/HelloWorld.vue' // @ is an alias to /src
 
-export default Vue.extend({
+export default ({
   name: 'Home',
   data: () => {
     return {
@@ -75,7 +85,7 @@ export default Vue.extend({
   },
   methods: {},
   computed: {
-    url1 () {
+    url1 (): string {
       return '/interaction/' + this.$route.params.uid + '/login'
     }
   },

@@ -4,28 +4,17 @@ import { Provider } from "oidc-provider";
 import { generators, Issuer } from 'openid-client';
 import helmet from 'helmet';
 
-var cors = require ('cors')
-
+const cors = require ('cors');
 const path = require ("path");
 const cookieParser = require ("cookie-parser");
 const logger = require ("morgan");
-const Vue = require ('vue')
-const server = require ('express') ()
-const renderer = require ('vue-server-renderer').createRenderer ()
-var history = require ('connect-history-api-fallback');
-
-const indexRouter = require ("./routes");
-const usersRouter = require ("./routes/users");
+const history = require ('connect-history-api-fallback');
 const body = urlencoded ({ extended: false });
 
 const app = express ();
-app.use (helmet ());
-// view engine setup
-app.set ("views", path.join (__dirname, "views"));
-//app.use(express.static(path.join(__dirname, '/client/dist')));
 
-// app.set('view engine', 'pug');
-// app.set("view engine", "ejs");
+app.use (helmet ());
+
 const staticFileMiddleware = express.static (path.join (__dirname + '/client/dist'));
 
 app.use (staticFileMiddleware);
@@ -100,10 +89,15 @@ const oidc = new Provider ("https://falogin.azurewebsites.net", {
     }
   },
   async findAccount (ctx, id) {
-    console.log (`Called findAccount: ${ id }`);
+    console.log (`Called findAccount: ${ id } ${ ctx }`);
+    // Intentional delay to mimic db call
+    await new Promise (r => setTimeout (r, 2000));
     return {
       accountId: id,
-      async claims (use, scope) { return { sub: id }; },
+      async claims (use, scope) {
+        console.log (use + scope)
+        return { sub: id };
+      },
     };
   }
 });
@@ -116,8 +110,6 @@ app.get ("/interaction/:uid", async (req, res, next) => {
       req,
       res
     );
-
-    console.log (uid)
 
     res.redirect ('/');
 
@@ -175,7 +167,7 @@ app.post (
 
 app.get ('/api/url', async (req, res, next) => {
   const host = process.env.NODE_ENV == 'production' ? 'https://falogin.azurewebsites.net' : 'http://localhost:3000'
-  const issuer = await Issuer.discover (host+'/oidc')
+  const issuer = await Issuer.discover (host + '/oidc')
   const client = new issuer.Client ({
     client_id: 'foo',
     response_types: ['id_token'],
@@ -187,7 +179,6 @@ app.get ('/api/url', async (req, res, next) => {
     nonce,
   });
 
-  console.log (url)
   res.send (url);
 });
 

@@ -55,4 +55,7 @@ nav {
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+.footer{
+  background-color: #f6f8f9;
+}
 </style>
