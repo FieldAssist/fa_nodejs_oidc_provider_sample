@@ -70,7 +70,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 // import HelloWorld from '@/components/HelloWorld.vue' // @ is an alias to /src
 
 export default ({
@@ -85,8 +85,9 @@ export default ({
   },
   methods: {},
   computed: {
-    url1 (): string {
-      return '/interaction/' + this.$route.params.uid + '/login'
+    url1 () {
+      // eslint-disable-next-line
+      return '/interaction/' + this.$router.params.uid + '/login'
     }
   },
   components: {}
