@@ -1,6 +1,6 @@
 const createError = require ("http-errors");
 import express, { Request, Response, urlencoded } from "express";
-import { Provider } from "oidc-provider";
+import { errors, Provider } from "oidc-provider";
 import { generators, Issuer } from 'openid-client';
 import helmet from 'helmet';
 
@@ -15,7 +15,9 @@ const app = express ();
 
 app.use (helmet ());
 
+
 const staticFileMiddleware = express.static (path.join (__dirname + '/client/dist'));
+Object.defineProperty(errors.InvalidRequest.prototype, 'allow_redirect', { value: false });
 
 app.use (staticFileMiddleware);
 app.use (history ({
