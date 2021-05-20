@@ -43,6 +43,7 @@
                   name="email"
                   v-model="form.email"
                   placeholder="Email"
+                  required
                 ></b-form-input>
                 <b-form-input
                   class="mt-2"
@@ -50,6 +51,7 @@
                   name="password"
                   v-model="form.password"
                   placeholder="Password"
+                  required
                 ></b-form-input>
                 <b-button class="mt-4" type="submit" variant="primary"
                 >Submit

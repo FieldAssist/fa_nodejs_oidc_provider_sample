@@ -1,6 +1,6 @@
 const createError = require ("http-errors");
 import express, { Request, Response, urlencoded } from "express";
-import { errors, Provider } from "oidc-provider";
+import { ErrorOut, errors, KoaContextWithOIDC, Provider } from "oidc-provider";
 import { generators, Issuer } from 'openid-client';
 import helmet from 'helmet';
 
@@ -17,8 +17,6 @@ app.use (helmet ());
 
 
 const staticFileMiddleware = express.static (path.join (__dirname + '/client/dist'));
-Object.defineProperty(errors.InvalidRequest.prototype, 'allow_redirect', { value: false });
-
 app.use (staticFileMiddleware);
 app.use (history ({
   disableDotRule: true,
@@ -101,6 +99,15 @@ const oidc = new Provider ("https://falogin.azurewebsites.net", {
         return { sub: id };
       },
     };
+  }
+  ,
+  renderError (ctx: KoaContextWithOIDC,
+               out: ErrorOut,
+               error: errors.OIDCProviderError | Error,
+  ) {
+    console.log (out)
+    console.log (error)
+    ctx.response.redirect (`/error#error=${ out.error }&message=${ out.error_description }`)
   }
 });
 
