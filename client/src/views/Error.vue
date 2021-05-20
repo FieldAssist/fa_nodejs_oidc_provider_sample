@@ -7,22 +7,26 @@
         <b-row no-gutters align-v="center">
           <b-col class="d-none d-sm-flex">
 
-              <lottie-animation
-                path="38463-error.json"
-                style="height: 200px"
-              />
+            <lottie-animation
+              path="38463-error.json"
+              style="height: 200px"
+            />
           </b-col>
           <b-col>
-            <b-card-title >
+            <b-card-title>
               Oops!
             </b-card-title>
             <p>
               Some error occurred
             </p>
-            <b-card-body class="py-2" >
+            <b-card-body class="py-2">
               <h6 class="text-danger" v-if="getParameterByName('error') ">{{ getParameterByName('error') }}</h6>
               <h6 class="text-danger" v-if="getParameterByName('message') ">{{ getParameterByName('message') }}</h6>
             </b-card-body>
+
+            <b-button class="my-3" to="/" type="submit" variant="primary"
+            >Login Again
+            </b-button>
             <p class="pt-2">
               Need help?<br/><a href="#"><u>Contact Support</u></a>
             </p>
