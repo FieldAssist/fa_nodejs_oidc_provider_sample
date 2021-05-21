@@ -67,8 +67,4 @@ nav {
   box-shadow: none;
 }
 
-.btn:hover {
-  background-color: #e8f0fe;
-}
-
 </style>
