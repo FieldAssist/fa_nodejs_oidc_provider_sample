@@ -5,6 +5,7 @@ import Root from '../views/Root.vue'
 import Error from '../views/Error.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
 import PasswordSuccessChange from '../views/PasswordChangeSuccess.vue'
+import LogoutSuccess from '../views/LogoutSuccess.vue'
 
 Vue.use(VueRouter)
 
@@ -36,6 +37,11 @@ const routes: Array<RouteConfig> = [
     path: '/password-change-success',
     name: 'ForgotPassword',
     component: PasswordSuccessChange
+  },
+  {
+    path: '/logout-success',
+    name: 'LogoutSuccess',
+    component: LogoutSuccess
   },
   {
     path: '/error',

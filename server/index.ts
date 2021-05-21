@@ -64,6 +64,18 @@ const oidc = new Provider ("https://falogin.azurewebsites.net", {
     devInteractions: {
       enabled: false,
     },
+    rpInitiatedLogout: {
+      enabled: true,
+      postLogoutSuccessSource: async function postLogoutSuccessSource(ctx) {
+        // @param ctx - koa request context
+        const {
+          clientId, clientName, clientUri, initiateLoginUri, logoUri, policyUri, tosUri,
+        } = ctx.oidc.client || {}; // client is defined if the user chose to stay logged in with the OP
+
+        ctx.response.redirect (`/logout-success`)
+
+      }
+    }
   },
   async loadExistingGrant (ctx) {
     const grantId =
@@ -108,7 +120,7 @@ const oidc = new Provider ("https://falogin.azurewebsites.net", {
     console.log (out)
     console.log (error)
     ctx.response.redirect (`/error#error=${ out.error }&message=${ out.error_description }`)
-  }
+  },
 });
 
 app.use ("/oidc", oidc.callback ());
@@ -178,7 +190,7 @@ app.post (
   "/api/forgot-password",
   body,
   async (req, res, next) => {
-    res.redirect('/password-change-success#email='+req.body.email)
+    res.redirect ('/password-change-success#email=' + req.body.email)
   }
 );
 
