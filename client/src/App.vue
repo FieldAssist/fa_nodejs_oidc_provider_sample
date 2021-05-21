@@ -5,20 +5,22 @@
     <!--      <router-link to="/about">About</router-link>-->
     <!--    </div>-->
     <b-navbar toggleable="lg" type="dark" variant="white" fixed>
-      <b-navbar-brand href="#">
-        <img src="./assets/logo.png" alt="Kitten" height="32px" />
+      <b-navbar-brand>
+        <img src="./assets/logo.png" alt="Kitten" height="32px"/>
         FieldAssist
       </b-navbar-brand>
-      <div class="mx-auto" />
-      <b-button to="/about" variant="default" class="d-none d-sm-block"
-        >Blog</b-button
+      <div class="mx-auto"/>
+      <b-button to="/about" href="https://www.fieldassist.in/blog" target="_blank" rel="noopener noreferrer" variant="default" class="d-none d-sm-block mr-2 "
+      >Blog
+      </b-button
       >
-      <b-button href="#" variant="default" class="d-none d-sm-block"
-        >Website</b-button
+      <b-button href="https://www.fieldassist.in/" target="_blank" rel="noopener noreferrer" variant="default" class="d-none d-sm-block"
+      >Website
+      </b-button
       >
     </b-navbar>
-    <router-view />
-    <footer class="footer fixed-bottom py-3 d-none d-sm-flex mx-auto">
+    <router-view/>
+    <footer class="footer fixed-bottom py-3 d-none d-sm-flex mx-auto" v-if="$route.path!=='/about'">
       <!-- Copyright -->
       <div class="footer-copyright text-center mx-auto">
         © 2021 Copyright:
@@ -38,6 +40,7 @@
   color: #2c3e50;
   height: 100vh;
 }
+
 nav {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
   min-height: 56px;
@@ -55,7 +58,17 @@ nav {
 #nav a.router-link-exact-active {
   color: #42b983;
 }
-.footer{
+
+.footer {
   background-color: #f6f8f9;
 }
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.btn:hover {
+  background-color: #e8f0fe;
+}
+
 </style>

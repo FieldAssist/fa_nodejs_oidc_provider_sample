@@ -1,7 +1,7 @@
 <template>
-  <div class="about my-1 pt-2 pb-4" style="max-height: 84%; overflow: scroll">
+  <div class="about my-1 pt-2 pb-4" style="max-height: 92%; overflow: scroll">
     <div class="d-flex justify-content-center vertical-center mx-2">
-      <b-card style="box-shadow: 0 5px 20px 0 rgb(21 27 38 / 8%)" border-variant="light"
+      <b-card style="box-shadow: 0 5px 20px 0 rgb(21 27 38 / 8%)" class="px-4" border-variant="light"
 
       >
         <b-card-title>
