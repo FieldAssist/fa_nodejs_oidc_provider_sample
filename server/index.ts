@@ -53,21 +53,11 @@ const oidc = new Provider ("https://falogin.azurewebsites.net", {
       client_id: "foo",
       client_secret: "bar",
       redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about","https://fieldassistsupport.freshworks.com/sp/OIDC/319510315427930032/callback"],
-      grant_types: ["implicit"],
-      response_types: ["id_token"],
-      token_endpoint_auth_method: "none",
-    },
-    {
-
-      client_id: "foo1",
-      client_secret: "bar1",
-      redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about","https://fieldassistsupport.freshworks.com/sp/OIDC/319510315427930032/callback"],
-      grant_types: ["implicit","authorization_code"],
-      response_types: ["id_token","code"],
+      response_types: ["code"],
     },
   ],
-  responseTypes: ["id_token"],
-  scopes: ["openid"],
+  responseTypes: ["id_token","code"],
+  scopes: ["openid","profile","email"],
   features: {
     devInteractions: {
       enabled: false,
@@ -207,8 +197,8 @@ app.get ('/api/url', async (req, res, next) => {
   const issuer = await Issuer.discover (host + '/oidc')
   const client = new issuer.Client ({
     client_id: 'foo',
-    response_types: ['id_token'],
-    redirect_uris: ['https://falogin.azurewebsites.net/about']
+    response_types: ['id_token','code'],
+    redirect_uris: ['https://fieldassistsupport.freshworks.com/sp/OIDC/319510315427930032/callback']
   })
 
   const url = client.authorizationUrl ({
