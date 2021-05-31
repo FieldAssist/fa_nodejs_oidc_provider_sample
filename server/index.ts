@@ -54,6 +54,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       client_secret: "bar",
       redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
       response_types: ["code"],
+      scope: 'openid email profile'
     },
   ],
   responseTypes: ["id_token", "code"],
@@ -113,9 +114,10 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
     await new Promise(r => setTimeout(r, 2000));
     return {
       accountId: id,
+      email: id,
       async claims(use, scope) {
         console.log(use + scope)
-        return { sub: id };
+        return { sub: id, email: id };
       },
     };
   }
