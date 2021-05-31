@@ -52,7 +52,7 @@ const oidc = new Provider ("https://falogin.azurewebsites.net", {
 
       client_id: "foo",
       client_secret: "bar",
-      redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about"],
+      redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about","https://fieldassistsupport.freshworks.com/sp/OIDC/319510315427930032/callback"],
       grant_types: ["implicit"],
       response_types: ["id_token"],
       token_endpoint_auth_method: "none",
