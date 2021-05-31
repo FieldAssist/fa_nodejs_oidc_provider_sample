@@ -75,15 +75,6 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       }
     }
   },
-  pkce: {
-    methods: [
-      'S256',
-    ],
-    required: function pkceRequired(ctx, client) {
-      return true;
-    },
-  },
-
   async loadExistingGrant(ctx) {
     const grantId =
       (ctx?.oidc?.result &&
