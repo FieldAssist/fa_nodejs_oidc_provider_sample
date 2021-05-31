@@ -52,7 +52,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
 
       client_id: "foo",
       client_secret: "bar",
-      redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/319510315427930032/callback"],
+      redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
       response_types: ["code"],
     },
   ],
@@ -207,7 +207,7 @@ app.get('/api/url', async (req, res, next) => {
   const client = new issuer.Client({
     client_id: 'foo',
     response_types: ['id_token', 'code'],
-    redirect_uris: ['https://fieldassistsupport.freshworks.com/sp/OIDC/319510315427930032/callback']
+    redirect_uris: ['https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback']
   })
 
   const url = client.authorizationUrl({
