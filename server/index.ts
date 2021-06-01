@@ -16,7 +16,7 @@ const app = express();
 app.use(helmet());
 
 
-const staticFileMiddleware = express.static(path.join(__dirname , 'client'));
+const staticFileMiddleware = express.static(path.join(__dirname , 'dist/client'));
 app.use(staticFileMiddleware);
 app.use(history({
   disableDotRule: true,
@@ -38,7 +38,7 @@ app.use(history({
 }));
 app.use(staticFileMiddleware);
 
-app.use(logger("dev"));
+app.use(logger("all"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -53,7 +53,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       client_id: "foo",
       client_secret: "bar",
       redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
-      response_types: ["code token"],
+      response_types: ["code","code token"],
       scope: 'openid email profile',
       grant_types:['implicit','authorization_code'],
     },
