@@ -49,9 +49,11 @@ const nonce = generators.nonce();
 const oidc = new Provider("https://falogin.azurewebsites.net", {
   clients: [
     {
+      application_type: "web",
       client_id: "foo",
       client_secret: "bar",
-      redirect_uris: ["https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
+      // redirect_uris: ["http://localhost:3000/select", "https://falogin.azurewebsites.net/select", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
+      redirect_uris: ["https://falogin.azurewebsites.net/select", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
       response_types: ["code", "code token", "id_token"],
       scope: 'openid email profile',
       grant_types: ['implicit', 'authorization_code'],
@@ -76,6 +78,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
         ctx.response.redirect(`/logout-success`)
       }
     }
+    ,
   },
   pkce: {
     methods: [
@@ -111,47 +114,9 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
     ctx.response.redirect(`/error#error=${out.error}&message=${out.error_description}`)
   },
 });
-app.use("/oidc", oidc.callback);
-
-app.get("/interaction/:uid", async (req, res, next) => {
-  try {
-    const { uid, prompt, params, session } = await oidc.interactionDetails(
-      req,
-      res
-    );
-
-    res.redirect('/');
-
-    // const id: unknown = params.client_id;
-    // const client11 = await oidc.Client.find(typeof id === "string" ? id : "12");
-    // switch (prompt.name) {
-    //   case "login": {
-
-    //     res.render("index", { users: [] });
-
-    //     return res.render("login", {
-    //       client11,
-    //       uid,
-    //       details: prompt.details,
-    //       params,
-    //       title: "Sign-in",
-    //       //session: session ? debug(session) : undefined,
-    //       // dbg: {
-    //       //   params: debug(params),
-    //       //   prompt: debug(prompt),
-
-    //       // },
-    //     });
-    //   }
-    //   default:
-    //     return undefined;
-    // }
-  } catch (err) {
-    return next(err);
-  }
-});
-
 oidc.Session.prototype.promptedScopesFor = () => new Set(['openid', 'email', 'profile']);
+
+app.use("/oidc", oidc.callback);
 
 app.post(
   "/interaction/:uid/login",

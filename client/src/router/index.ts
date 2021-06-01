@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import Home from '../views/Home.vue'
+import Login from '../views/Home.vue'
 import Root from '../views/Root.vue'
 import Error from '../views/Error.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
@@ -17,16 +17,16 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/interaction/:uid',
-    name: 'Home',
-    component: Home
+    name: 'Login',
+    component: Login
   },
   {
-    path: '/about',
-    name: 'About',
+    path: '/select',
+    name: 'Select',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/Select.vue')
   },
   {
     path: '/forgot-password',
