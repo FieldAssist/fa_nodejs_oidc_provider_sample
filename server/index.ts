@@ -16,7 +16,7 @@ const app = express();
 app.use(helmet());
 
 
-const staticFileMiddleware = express.static(path.join(__dirname + '/client/dist'));
+const staticFileMiddleware = express.static(path.join(__dirname , 'client'));
 app.use(staticFileMiddleware);
 app.use(history({
   disableDotRule: true,
@@ -54,7 +54,8 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       client_secret: "bar",
       redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
       response_types: ["code token"],
-      scope: 'openid email profile'
+      scope: 'openid email profile',
+      grant_types:['implicit','authorization_code'],
     },
   ],
   responseTypes: ["id_token", "code", "code token"],
@@ -227,6 +228,7 @@ app.use((req, res, next) => {
 
 // error handler
 app.use((err: any, req: Request, res: Response, next: any) => {
+  console.error(err)
   // set locals, only providing error in development
   res.locals.message = err.message ?? "Unknown Error";
   res.locals.error = req.app.get("env") === "development" ? err : {};
