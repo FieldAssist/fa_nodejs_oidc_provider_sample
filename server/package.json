@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "NODE_ENV=production ts-node ./index.ts",
-    "dev:debug": "nodemon --inspect index.ts",
+    "dev:debug": "DEBUG=oidc-provider:* nodemon --inspect index.ts",
     "serve": "node dist/index.js",
     "build": "tsc",
     "format-staged": "pretty-quick --staged"
@@ -22,7 +22,7 @@
     "helmet": "^4.6.0",
     "http-errors": "~1.8.0",
     "morgan": "~1.10.0",
-    "oidc-provider": "^7.3.2",
+    "oidc-provider": "^6.31.1",
     "openid-client": "^4.7.3",
     "pug": "^3.0.2",
     "vue-axios": "^3.2.4",

@@ -59,9 +59,15 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
   ],
   responseTypes: ["id_token", "code", "code token"],
   scopes: ["openid", "profile", "email"],
+  formats:{
+    AccessToken:'jwt',
+  },
   features: {
+    userinfo: {
+      enabled: true,
+    },
     devInteractions: {
-      enabled: false,
+      enabled: true,
     },
     rpInitiatedLogout: {
       enabled: true,
@@ -84,46 +90,41 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       return false;
     },
   },
-
-  async loadExistingGrant(ctx) {
-    const grantId =
-      (ctx?.oidc?.result &&
-        ctx?.oidc?.result?.consent &&
-        ctx?.oidc?.result?.consent?.grantId) ||
-      ctx?.oidc?.session?.grantIdFor(ctx?.oidc?.client?.clientId!);
-
-    if (grantId) {
-      return ctx?.oidc?.provider?.Grant.find(grantId);
-    } else {
-      const grant = new ctx.oidc.provider.Grant();
-      (grant.clientId = ctx?.oidc?.client?.clientId),
-        (grant.accountId = ctx?.oidc?.session?.accountId),
-        grant.addOIDCScope("openid email profile");
-      grant.addOIDCClaims(["first_name"]);
-      grant.addResourceScope(
-        "urn:example:resource-indicator",
-        "api:read api:write"
-      );
-      await grant.save();
-      return grant;
-    }
-  },
+  // async loadExistingGrant(ctx) {
+  //   const grantId =
+  //     (ctx?.oidc?.result &&
+  //       ctx?.oidc?.result?.consent &&
+  //       ctx?.oidc?.result?.consent?.grantId) ||
+  //     ctx?.oidc?.session?.grantIdFor(ctx?.oidc?.client?.clientId!);
+  //
+  //   if (grantId) {
+  //     return ctx?.oidc?.provider?.Grant.find(grantId);
+  //   } else {
+  //     const grant = new ctx.oidc.provider.Grant();
+  //     (grant.clientId = ctx?.oidc?.client?.clientId),
+  //       (grant.accountId = ctx?.oidc?.session?.accountId),
+  //       grant.addOIDCScope("openid email profile");
+  //     grant.addOIDCClaims(["email"]);
+  //     grant.addResourceScope(
+  //       "foo",
+  //       "api:read api:write",
+  //     );
+  //     await grant.save();
+  //     return grant;
+  //   }
+  // },
   async findAccount(ctx, id) {
-    console.log(`Called findAccount: ${id} ${ctx}`);
     // Intentional delay to mimic db call
     await new Promise(r => setTimeout(r, 2000));
     return {
       accountId: id,
       email: id,
       async claims(use, scope) {
-        console.log(use + scope)
         return { sub: id, email: id };
       },
     };
   },
-  async extraTokenClaims(ctx, token) {
-    console.log(token)
-    console.log(ctx)
+  async extraAccessTokenClaims(ctx, token) {
     const claims = ctx.oidc.account;
     return {
       email: claims?.accountId,
@@ -138,8 +139,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
     ctx.response.redirect(`/error#error=${out.error}&message=${out.error_description}`)
   },
 });
-
-app.use("/oidc", oidc.callback());
+app.use("/oidc", oidc.callback);
 
 app.get("/interaction/:uid", async (req, res, next) => {
   try {
@@ -188,7 +188,7 @@ app.post(
 
       const result = {
         login: {
-          accountId: req.body.email,
+          account: req.body.email,
         },
       };
 
