@@ -35,5 +35,5 @@ jobs:
         app-name: 'falogin'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_a1f5b85936c74a2998f7d3c19dcdd508 }}
-        package: ./server/dist
+        package: ./server/
 
