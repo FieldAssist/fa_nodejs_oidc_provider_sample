@@ -67,7 +67,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       enabled: true,
     },
     devInteractions: {
-      enabled: true,
+      enabled: false,
     },
     rpInitiatedLogout: {
       enabled: true,
@@ -179,6 +179,8 @@ app.get("/interaction/:uid", async (req, res, next) => {
   }
 });
 
+oidc.Session.prototype.promptedScopesFor = () => new Set(['openid','email','profile']);
+
 app.post(
   "/interaction/:uid/login",
   body,
@@ -193,7 +195,7 @@ app.post(
       };
 
       await oidc.interactionFinished(req, res, result, {
-        mergeWithLastSubmission: false,
+        mergeWithLastSubmission: true,
       });
     } catch (err) {
       console.error(err);
