@@ -52,7 +52,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       client_id: "foo",
       client_secret: "bar",
       redirect_uris: ["https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
-      response_types: ["code", "code token"],
+      response_types: ["code", "code token", "id_token"],
       scope: 'openid email profile',
       grant_types: ['implicit', 'authorization_code'],
     },
@@ -159,16 +159,20 @@ app.post(
   async (req, res, next) => {
     try {
       const interaction = await oidc.interactionDetails(req, res);
-
+      console.log(interaction);
       const result = {
         login: {
           account: req.body.email,
         },
       };
 
-      await oidc.interactionFinished(req, res, result, {
-        mergeWithLastSubmission: true,
-      });
+      if (req.body.password !== 'abc') {
+        return res.redirect('/error#error=Invalid Credentials')
+      } else {
+        await oidc.interactionFinished(req, res, result, {
+          mergeWithLastSubmission: true,
+        });
+      }
     } catch (err) {
       console.error(err);
       next(err);
