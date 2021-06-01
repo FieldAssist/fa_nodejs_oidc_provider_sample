@@ -51,7 +51,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
     {
       client_id: "foo",
       client_secret: "bar",
-      redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
+      redirect_uris: ["https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
       response_types: ["code", "code token"],
       scope: 'openid email profile',
       grant_types: ['implicit', 'authorization_code'],
@@ -62,10 +62,8 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
   formats: {
     AccessToken: 'jwt',
   },
-  conformIdTokenClaims:false,
-
+  conformIdTokenClaims: false,
   features: {
-
     userinfo: {
       enabled: true,
     },
@@ -75,13 +73,7 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
     rpInitiatedLogout: {
       enabled: true,
       postLogoutSuccessSource: async function postLogoutSuccessSource(ctx) {
-        // @param ctx - koa request context
-        const {
-          clientId, clientName, clientUri, initiateLoginUri, logoUri, policyUri, tosUri,
-        } = ctx.oidc.client || {}; // client is defined if the user chose to stay logged in with the OP
-
         ctx.response.redirect(`/logout-success`)
-
       }
     }
   },
@@ -93,51 +85,13 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       return false;
     },
   },
-  // async loadExistingGrant(ctx) {
-  //   const grantId =
-  //     (ctx?.oidc?.result &&
-  //       ctx?.oidc?.result?.consent &&
-  //       ctx?.oidc?.result?.consent?.grantId) ||
-  //     ctx?.oidc?.session?.grantIdFor(ctx?.oidc?.client?.clientId!);
-  //
-  //   if (grantId) {
-  //     return ctx?.oidc?.provider?.Grant.find(grantId);
-  //   } else {
-  //     const grant = new ctx.oidc.provider.Grant();
-  //     (grant.clientId = ctx?.oidc?.client?.clientId),
-  //       (grant.accountId = ctx?.oidc?.session?.accountId),
-  //       grant.addOIDCScope("openid email profile");
-  //     grant.addOIDCClaims(["email"]);
-  //     grant.addResourceScope(
-  //       "foo",
-  //       "api:read api:write",
-  //     );
-  //     await grant.save();
-  //     return grant;
-  //   }
-  // },
-  claims:{
+  claims: {
     email: ['email', 'email_verified'],
-
   },
   async findAccount(ctx, sub, token) {
-    // @param ctx - koa request context
-    // @param sub {string} - account identifier (subject)
-    // @param token - is a reference to the token used for which a given account is being loaded,
-    //   is undefined in scenarios where claims are returned from authorization endpoint
     return {
       accountId: sub,
-      // @param use {string} - can either be "id_token" or "userinfo", depending on
-      //   where the specific claims are intended to be put in
-      // @param scope {string} - the intended scope, while oidc-provider will mask
-      //   claims depending on the scope automatically you might want to skip
-      //   loading some claims from external resources or through db projection etc. based on this
-      //   detail or not return them in ID Tokens but only UserInfo and so on
-      // @param claims {object} - the part of the claims authorization parameter for either
-      //   "id_token" or "userinfo" (depends on the "use" param)
-      // @param rejected {Array[String]} - claim names that were rejected by the end-user, you might
-      //   want to skip loading some claims from external resources or through db projection
-      async claims(use, scope, claims, rejected) {
+      async claims() {
         return { sub, email: sub };
       },
     };
