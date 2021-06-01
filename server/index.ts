@@ -53,11 +53,11 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       client_id: "foo",
       client_secret: "bar",
       redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
-      response_types: ["code"],
+      response_types: ["code token"],
       scope: 'openid email profile'
     },
   ],
-  responseTypes: ["id_token", "code"],
+  responseTypes: ["id_token", "code", "code token"],
   scopes: ["openid", "profile", "email"],
   features: {
     devInteractions: {
