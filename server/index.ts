@@ -16,7 +16,7 @@ const app = express();
 app.use(helmet());
 
 
-const staticFileMiddleware = express.static(path.join(__dirname , 'dist/client'));
+const staticFileMiddleware = express.static(path.join(__dirname, 'dist/client'));
 app.use(staticFileMiddleware);
 app.use(history({
   disableDotRule: true,
@@ -49,13 +49,12 @@ const nonce = generators.nonce();
 const oidc = new Provider("https://falogin.azurewebsites.net", {
   clients: [
     {
-
       client_id: "foo",
       client_secret: "bar",
       redirect_uris: ["https://azure.fieldassist.io/", "https://falogin.azurewebsites.net/about", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
-      response_types: ["code","code token"],
+      response_types: ["code", "code token"],
       scope: 'openid email profile',
-      grant_types:['implicit','authorization_code'],
+      grant_types: ['implicit', 'authorization_code'],
     },
   ],
   responseTypes: ["id_token", "code", "code token"],
@@ -121,8 +120,15 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
         return { sub: id, email: id };
       },
     };
-  }
-  ,
+  },
+  async extraTokenClaims(ctx, token) {
+    console.log(token)
+    console.log(ctx)
+    const claims = ctx.oidc.account;
+    return {
+      email: claims?.accountId,
+    };
+  },
   renderError(ctx: KoaContextWithOIDC,
               out: ErrorOut,
               error: errors.OIDCProviderError | Error,
