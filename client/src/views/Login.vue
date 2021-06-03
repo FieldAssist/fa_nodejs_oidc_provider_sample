@@ -57,6 +57,9 @@
                 >Submit
                 </b-button
                 >
+                <h6 class="text-danger mt-4" v-if="getParameterByName('error') ">{{ getParameterByName('error') }}</h6>
+                <h6 class="text-danger" v-if="getParameterByName('message') ">{{ getParameterByName('message') }}</h6>
+
                 <div class="mt-4 mb-4">
                   <a href="/forgot-password"><u>Forgot Password</u></a>
                 </div>
@@ -72,7 +75,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 // import HelloWorld from '@/components/HelloWorld.vue' // @ is an alias to /src
 export default ({
   name: 'Login',
@@ -84,13 +87,18 @@ export default ({
       }
     }
   },
-  methods: {},
   computed: {
-    url1 (): string {
-      return '/interaction/' + (this as any).$route.params.uid + '/login'
+    url1 () {
+      return '/interaction/' + this.$route.params.uid + '/login'
     }
   },
-  components: {}
+  components: {},
+  methods: {
+    getParameterByName (name) {
+      const match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash)
+      return match && decodeURIComponent(match[1].replace(/\+/g, ' '))
+    }
+  }
 })
 </script>
 

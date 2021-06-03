@@ -1,6 +1,6 @@
 const createError = require("http-errors");
 import express, { Request, Response, urlencoded } from "express";
-import { ErrorOut, errors, KoaContextWithOIDC, Provider } from "oidc-provider";
+import { ErrorOut, errors, InteractionResults, KoaContextWithOIDC, Provider } from "oidc-provider";
 import { generators, Issuer } from 'openid-client';
 import helmet from 'helmet';
 
@@ -49,25 +49,30 @@ const nonce = generators.nonce();
 const oidc = new Provider("https://falogin.azurewebsites.net", {
   clients: [
     {
-      application_type: "web",
       client_id: "foo",
       client_secret: "bar",
-      // redirect_uris: ["http://localhost:3000/select", "https://falogin.azurewebsites.net/select", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
-      redirect_uris: ["https://falogin.azurewebsites.net/select", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
-      response_types: ["code", "code token", "id_token"],
-      scope: 'openid email profile',
+      redirect_uris: ["http://localhost:3000/select", "https://falogin.azurewebsites.net/select", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
+      // redirect_uris: ["https://falogin.azurewebsites.net/select", "https://fieldassistsupport.freshworks.com/sp/OIDC/318288514547605716/callback"],
+      response_types: ["code", "id_token"],
+      scope: 'openid email',
       grant_types: ['implicit', 'authorization_code'],
     },
   ],
-  responseTypes: ["id_token", "code", "code token"],
-  scopes: ["openid", "profile", "email"],
+  issueRefreshToken: () => { return false;},
+  responseTypes: ["id_token", "code"],
+  scopes: ["openid", "email"],
   formats: {
     AccessToken: 'jwt',
   },
+
+  tokenEndpointAuthMethods: ["client_secret_basic", "client_secret_jwt",],
   conformIdTokenClaims: false,
   features: {
+    jwtUserinfo: {
+      enabled: false
+    },
     userinfo: {
-      enabled: true,
+      enabled: false,
     },
     devInteractions: {
       enabled: false,
@@ -76,9 +81,8 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
       enabled: true,
       postLogoutSuccessSource: async function postLogoutSuccessSource(ctx) {
         ctx.response.redirect(`/logout-success`)
-      }
-    }
-    ,
+      },
+    },
   },
   pkce: {
     methods: [
@@ -109,12 +113,11 @@ const oidc = new Provider("https://falogin.azurewebsites.net", {
               out: ErrorOut,
               error: errors.OIDCProviderError | Error,
   ) {
-    console.log(out)
     console.log(error)
     ctx.response.redirect(`/error#error=${out.error}&message=${out.error_description}`)
   },
 });
-oidc.Session.prototype.promptedScopesFor = () => new Set(['openid', 'email', 'profile']);
+oidc.Session.prototype.promptedScopesFor = () => new Set(['openid', 'email']);
 
 app.use("/oidc", oidc.callback);
 
@@ -125,16 +128,21 @@ app.post(
     try {
       const interaction = await oidc.interactionDetails(req, res);
       console.log(interaction);
-      const result = {
-        login: {
-          account: req.body.email,
-        },
-      };
 
       if (req.body.password !== 'abc') {
-        return res.redirect('/error#error=Invalid Credentials')
+        const out = {
+          error: "Access Denied",
+          error_description: "Invalid Credentials"
+        }
+        return res.redirect(`/interaction/${interaction.uid}#error=${out.error}&message=${out.error_description}`)
       } else {
-        await oidc.interactionFinished(req, res, result, {
+        const result: InteractionResults = {
+          login: {
+            account: req.body.email,
+            remember: true,
+          },
+        };
+        return oidc.interactionFinished(req, res, result, {
           mergeWithLastSubmission: true,
         });
       }
