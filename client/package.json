@@ -14,7 +14,7 @@
     "dns": "^0.2.2",
     "http2": "^3.3.7",
     "lottie-vuejs": "^0.4.0",
-    "openid-client": "^4.7.3",
+    "openid-client": "^5.4.0",
     "vue": "^2.6.11",
     "vue-axios": "^3.2.4",
     "vue-router": "^3.2.0"
